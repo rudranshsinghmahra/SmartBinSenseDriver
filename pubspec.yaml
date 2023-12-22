@@ -52,6 +52,8 @@ dependencies:
   flutter_compass: ^0.8.0
   flutter_background_service: ^5.0.5
   permission_handler: ^11.1.0
+  firebase_storage: ^11.5.6
+  image_picker: ^1.0.5
 
 dev_dependencies:
   flutter_test:

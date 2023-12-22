@@ -9,10 +9,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
       options: const FirebaseOptions(
-          apiKey: "AIzaSyBxvxeQaz9duSs-855uqI4hKAJl7DCe7xk",
-          appId: "1:677800212738:android:9341cfbed3a5f1fd666a1b",
-          messagingSenderId: "677800212738",
-          projectId: "smartbinsense-caa15"));
+    apiKey: "AIzaSyBxvxeQaz9duSs-855uqI4hKAJl7DCe7xk",
+    appId: "1:677800212738:android:9341cfbed3a5f1fd666a1b",
+    messagingSenderId: "677800212738",
+    projectId: "smartbinsense-caa15",
+    storageBucket: 'smartbinsense-caa15.appspot.com',
+  ));
   runApp(const MyApp());
 }
 
@@ -25,11 +27,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: user != null ? const HomeScreen() : const SplashScreen(),
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: primary,
-        useMaterial3: false
-      ),
-
+      theme: ThemeData(primarySwatch: primary, useMaterial3: false),
     );
   }
 }

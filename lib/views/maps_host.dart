@@ -36,6 +36,7 @@ class MapsHostState extends State<MapsHost> {
 
   Future<void> getHeading() async {
     FlutterCompass.events?.listen((CompassEvent event) {
+      if (!mounted) return;
       setState(() {
         _heading = event.heading ?? 0;
       });
@@ -43,7 +44,7 @@ class MapsHostState extends State<MapsHost> {
   }
 
   void updateDatabase() {
-    FirebaseDatabase.instance.ref().child(_deviceId!).set({
+    FirebaseDatabase.instance.ref().child(_deviceId!).update({
       'latitude': currentLocation['latitude'],
       'longitude': currentLocation['longitude'],
       'heading': _heading,
@@ -61,6 +62,7 @@ class MapsHostState extends State<MapsHost> {
 
     locationSubscription =
         Location().onLocationChanged.listen((LocationData result) {
+      if (!mounted) return;
       setState(() {
         currentLocation = {
           'latitude': result.latitude!,
