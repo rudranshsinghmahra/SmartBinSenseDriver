@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:platform_device_id_v3/platform_device_id.dart';
 import 'package:smart_bin_sense_driver_app/views/driver_profile_screen.dart';
 import '../services/firebase_services.dart';
 import '../widgets/appbar/custom_appbar_location.dart';

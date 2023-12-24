@@ -23,13 +23,40 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
   TextStyle style = GoogleFonts.nunito();
   FirebaseServices firebaseServices = FirebaseServices();
   XFile? _image;
+  String? networkImageUrl;
   String? deviceId;
 
-  Future<void> initDeviceId() async {
+  Future<String?> initDeviceId() async {
     String? deviceId = await PlatformDeviceId.getDeviceId;
-    if (!mounted) return;
     setState(() {
       this.deviceId = deviceId!;
+    });
+    return deviceId;
+  }
+
+  Future getTruckerData(String deviceId) async {
+    firebaseServices.getTruckDriverDetails(deviceId).then((dataSnapshot){
+      if (dataSnapshot.value != null) {
+        // Data found based on plateNumber filter
+        Map<dynamic, dynamic>? values =
+        dataSnapshot.value as Map<dynamic, dynamic>?;
+
+        if (values != null) {
+          values.forEach((key, values) {
+            nameController.text = values['name'];
+            emailController.text = values['email'];
+            phoneController.text = values['phoneNumber'];
+            plateController.text = values['plateNumber'];
+            truckController.text = values['truckModel'];
+            setState(() {
+              networkImageUrl = values['imageUrl'];
+            });
+          });
+        }
+      } else {
+        // No data found based on plateNumber filter
+        showCustomToast("No data found for deviceID: $deviceId");
+      }
     });
   }
 
@@ -80,7 +107,9 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
 
   @override
   void initState() {
-    initDeviceId();
+    initDeviceId().then((deviceId) {
+      getTruckerData(deviceId.toString());
+    });
     super.initState();
   }
 
@@ -112,26 +141,37 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                     onTap: () {
                       _pickImage();
                     },
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
-                      child: _image == null
-                          ? const Icon(
-                              Icons.camera_alt,
-                              size: 80,
-                            )
-                          : SizedBox(
+                    child: _image == null
+                        ? (networkImageUrl?.isNotEmpty ??
+                                false) // Check if networkImageUrl is not null and not empty
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(50),
+                                child: Image.network(
+                                  networkImageUrl!,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : const Icon(
+                                Icons.camera_alt,
+                                size: 80,
+                              )
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: SizedBox(
                               width: double.infinity,
                               height: 200,
                               child: Image.file(
                                 File(_image!.path),
                                 fit: BoxFit.cover,
-                              )),
-                    ),
+                              ),
+                            ),
+                          ),
                   ),
                 ),
               ),
               TextField(
                 controller: nameController,
+                style: style,
                 decoration: InputDecoration(
                   labelText: 'Name',
                   labelStyle: style,
@@ -140,6 +180,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
               ),
               const SizedBox(height: 16),
               TextField(
+                style: style,
                 controller: emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
@@ -149,6 +190,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
               ),
               const SizedBox(height: 16),
               TextField(
+                style: style,
                 controller: phoneController,
                 keyboardType: TextInputType.phone,
                 maxLength: 10,
@@ -160,6 +202,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
               ),
               const SizedBox(height: 16),
               TextField(
+                style: style,
                 controller: plateController,
                 decoration: InputDecoration(
                   labelStyle: style,
@@ -169,6 +212,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
               ),
               const SizedBox(height: 16),
               TextField(
+                style: style,
                 controller: truckController,
                 decoration: InputDecoration(
                   labelStyle: style,

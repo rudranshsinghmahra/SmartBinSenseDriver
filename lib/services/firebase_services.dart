@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -155,4 +154,35 @@ class FirebaseServices {
       "userId": user?.uid,
     });
   }
+
+  Future<DataSnapshot> getTruckDriverDetails(String deviceID) async {
+    DataSnapshot dataSnapshot = await databaseReference
+        .orderByChild("deviceId")
+        .equalTo(deviceID)
+        .get();
+    return dataSnapshot;
+  }
+
+//Function to get Truck Driver Details from Firebase Realtime Database
+// Future<Map<String, dynamic>?> getTruckDriverDetails(String deviceId) async {
+//   DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
+//
+//   try {
+//     DatabaseEvent event = await databaseReference.child(deviceId).once();
+//
+//     if (event.snapshot.value != null) {
+//       Map<String, dynamic> data = Map<String, dynamic>.from(
+//           event.snapshot.value as Map<dynamic, dynamic>);
+//       return data;
+//     } else {
+//       // Data does not exist
+//       return null;
+//     }
+//   } catch (error) {
+//     if (kDebugMode) {
+//       print("Error fetching data: $error");
+//     }
+//     return null;
+//   }
+// }
 }
