@@ -23,7 +23,8 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(150),
-          child: customAppBarLocation(searchTextEditingController),
+          child: CustomAppBarLocation(
+              searchTextEditingController: searchTextEditingController),
         ),
         body: [
           Column(

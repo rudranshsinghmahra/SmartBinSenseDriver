@@ -6,10 +6,12 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:geocoding/geocoding.dart' as geocoding;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:location/location.dart';
 import '../views/log_in_screen.dart';
 import '../views/otp_verify_screen.dart';
 
@@ -155,6 +157,7 @@ class FirebaseServices {
     });
   }
 
+  //Method to Fetch Data from Realtime Database based on Specific Condition
   Future<DataSnapshot> getTruckDriverDetails(String deviceID) async {
     DataSnapshot dataSnapshot = await databaseReference
         .orderByChild("deviceId")
@@ -185,4 +188,50 @@ class FirebaseServices {
 //     return null;
 //   }
 // }
+
+  Future<String> getUserAddress() async {
+    // Initialize location service and permissions
+    Location location = Location();
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
+
+    serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        return 'Location service is not enabled.';
+      }
+    }
+
+    permissionGranted = await location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
+        return 'Location permissions are not granted.';
+      }
+    }
+
+    // Get current user location
+    LocationData currentLocation = await location.getLocation();
+
+    // Use geocoding to get the address
+    List<geocoding.Placemark> placeMarks =
+        await geocoding.placemarkFromCoordinates(
+            currentLocation.latitude!.toDouble(),
+            currentLocation.longitude!.toDouble());
+
+    geocoding.Placemark firstPlaceMarks = placeMarks[0];
+
+    // Return the formatted address
+    return '${firstPlaceMarks.name},${firstPlaceMarks.subLocality},${firstPlaceMarks.postalCode}';
+  }
+
+  Future<void> setTruckerHomeLocationToDatabase({
+    required String address,
+    required String deviceId,
+  }) async {
+    await databaseReference.child(deviceId).update({
+      "address": address.trim(),
+    });
+  }
 }
