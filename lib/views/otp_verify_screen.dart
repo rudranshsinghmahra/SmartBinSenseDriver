@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-
 import '../colors.dart';
+import '../constants.dart';
 import 'onboarding_screen.dart';
 
 class OtpVerifyScreen extends StatefulWidget {
@@ -81,29 +82,51 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                 animationDuration: const Duration(milliseconds: 300),
                 controller: otpEditingController,
                 keyboardType: TextInputType.number,
-                onCompleted: (v) {
+                onCompleted: (v) async {
                   debugPrint("Completed");
+
+                  //To prevent build_context warning
+                  Completer<void> completer = Completer<void>();
+
                   try {
                     PhoneAuthCredential phoneAuthCredential =
                         PhoneAuthProvider.credential(
-                            verificationId: widget.verificationId,
-                            smsCode: otpEditingController.text.toString());
-                    FirebaseAuth.instance
-                        .signInWithCredential(phoneAuthCredential)
-                        .then((value) => {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const OnBoardingScreenOne(),
-                                ),
-                              )
-                            });
+                      verificationId: widget.verificationId,
+                      smsCode: otpEditingController.text.toString(),
+                    );
+
+                    UserCredential userCredential = await FirebaseAuth.instance
+                        .signInWithCredential(phoneAuthCredential);
+                    if (kDebugMode) {
+                      print(userCredential);
+                    }
+                    //To prevent build_context warning
+                    completer.complete();
+                  } on FirebaseAuthException catch (e) {
+                    if (kDebugMode) {
+                      print(
+                          "FirebaseAuthException - Code: ${e.code}, Message: ${e.message}");
+                    }
+                    if (e.code == 'invalid-verification-code') {
+                      showCustomToast(e.message.toString());
+                    } else {
+                      showCustomToast("Error! Try after some time");
+                    }
                   } catch (e) {
                     if (kDebugMode) {
-                      print(e.toString());
+                      showCustomToast("Error during authentication: $e");
                     }
                   }
+
+                  //To prevent build_context warning
+                  completer.future.then((_) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const OnBoardingScreenOne(),
+                      ),
+                    );
+                  });
                 },
                 onChanged: (value) {
                   debugPrint(value);

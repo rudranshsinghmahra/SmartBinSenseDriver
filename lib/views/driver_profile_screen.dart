@@ -35,11 +35,11 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
   }
 
   Future getTruckerData(String deviceId) async {
-    firebaseServices.getTruckDriverDetails(deviceId).then((dataSnapshot){
+    firebaseServices.getTruckDriverDetails(deviceId).then((dataSnapshot) {
       if (dataSnapshot.value != null) {
-        // Data found based on plateNumber filter
+        // Data found based on deviceId filter
         Map<dynamic, dynamic>? values =
-        dataSnapshot.value as Map<dynamic, dynamic>?;
+            dataSnapshot.value as Map<dynamic, dynamic>?;
 
         if (values != null) {
           values.forEach((key, values) {
