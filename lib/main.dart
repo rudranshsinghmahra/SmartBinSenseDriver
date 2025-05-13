@@ -8,6 +8,7 @@ import 'package:smart_bin_sense_driver_app/views/splash_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
+    name : "SmartBinSense",
       options: const FirebaseOptions(
     apiKey: "AIzaSyBxvxeQaz9duSs-855uqI4hKAJl7DCe7xk",
     appId: "1:677800212738:android:9341cfbed3a5f1fd666a1b",

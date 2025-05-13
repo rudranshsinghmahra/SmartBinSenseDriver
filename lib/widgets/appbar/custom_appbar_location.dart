@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_udid/flutter_udid.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:platform_device_id_v3/platform_device_id.dart';
 import 'package:smart_bin_sense_driver_app/services/firebase_services.dart';
 
 import '../../colors.dart';
@@ -22,10 +22,15 @@ class _CustomAppBarLocationState extends State<CustomAppBarLocation> {
   bool isLoading = false;
   String? deviceId;
 
+  Future<String> getUdid() async {
+    deviceId = await FlutterUdid.udid;
+    return deviceId.toString();
+  }
+
   Future<String?> initDeviceId() async {
-    String? deviceId = await PlatformDeviceId.getDeviceId;
+    String? deviceId = await getUdid();
     setState(() {
-      this.deviceId = deviceId!;
+      this.deviceId = deviceId;
     });
     return deviceId;
   }

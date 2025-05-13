@@ -1,16 +1,17 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_compass/flutter_compass.dart';
+import 'package:flutter_udid/flutter_udid.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:platform_device_id_v3/platform_device_id.dart';
 import 'package:permission_handler/permission_handler.dart'
     as permission_handler;
 
 class MapsHost extends StatefulWidget {
-  const MapsHost({Key? key}) : super(key: key);
+  const MapsHost({super.key});
 
   @override
   State createState() => MapsHostState();
@@ -24,14 +25,19 @@ class MapsHostState extends State<MapsHost> {
   BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
   Location location = Location();
   String? error;
-  String? _deviceId;
+  String? deviceId;
 
-  Future<void> initDeviceId() async {
-    String? deviceId = await PlatformDeviceId.getDeviceId;
-    if (!mounted) return;
+  Future<String> getUdid() async {
+    deviceId = await FlutterUdid.udid;
+    return deviceId.toString();
+  }
+
+  Future<String?> initDeviceId() async {
+    String? deviceId = await getUdid();
     setState(() {
-      _deviceId = deviceId!;
+      this.deviceId = deviceId;
     });
+    return deviceId;
   }
 
   Future<void> getHeading() async {
@@ -44,7 +50,7 @@ class MapsHostState extends State<MapsHost> {
   }
 
   void updateDatabase() {
-    FirebaseDatabase.instance.ref().child(_deviceId!).update({
+    FirebaseDatabase.instance.ref().child(deviceId!).update({
       'latitude': currentLocation['latitude'],
       'longitude': currentLocation['longitude'],
       'heading': _heading,
@@ -61,7 +67,7 @@ class MapsHostState extends State<MapsHost> {
     initPlatformState();
 
     locationSubscription =
-        Location().onLocationChanged.listen((LocationData result) {
+        location.onLocationChanged.listen((LocationData result) {
       if (!mounted) return;
       setState(() {
         currentLocation = {
@@ -154,31 +160,28 @@ class MapsHostState extends State<MapsHost> {
           padding: const EdgeInsets.all(0),
           child: Column(
             children: <Widget>[
-              SizedBox(
-                width: double.infinity,
-                height: 350.0,
-                child: GoogleMap(
-                  markers: <Marker>{
-                    Marker(
-                      markerId: const MarkerId("currentLocation"),
-                      icon: markerIcon,
-                      position: LatLng(currentLocation['latitude']!,
+              Expanded(
+                child: SizedBox(
+                  child: GoogleMap(
+                    markers: <Marker>{
+                      Marker(
+                        markerId: const MarkerId("currentLocation"),
+                        icon: markerIcon,
+                        position: LatLng(currentLocation['latitude']!,
+                            currentLocation['longitude']!),
+                        rotation: _heading,
+                        infoWindow: const InfoWindow(title: "Marker Title"),
+                      ),
+                    },
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(currentLocation['latitude']!,
                           currentLocation['longitude']!),
-                      rotation: _heading,
-                      infoWindow: const InfoWindow(title: "Marker Title"),
+                      zoom: 17,
                     ),
-                  },
-                  initialCameraPosition: CameraPosition(
-                    target: LatLng(currentLocation['latitude']!,
-                        currentLocation['longitude']!),
-                    zoom: 17,
+                    onMapCreated: _onMapCreated,
                   ),
-                  onMapCreated: _onMapCreated,
                 ),
               ),
-              Text(
-                  'Lat/Lng: ${currentLocation['latitude']}/${currentLocation['longitude']}'),
-              Text("Device ID: $_deviceId"),
             ],
           ),
         ),

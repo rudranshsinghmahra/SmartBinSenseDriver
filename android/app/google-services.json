@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "677800212738-1c5rfumtp8gk7m518tblm8d4u5dju6o2.apps.googleusercontent.com",
+          "client_id": "677800212738-34j0q2aept2dsj55ng9jh89cbb07p41c.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.rudransh.smart_bin_sense",
-            "certificate_hash": "f9653b4e59bfda4433d608ca932dfc7dc73a490a"
+            "certificate_hash": "e23920d9dc3ef7a38db2c12eac9e80a2c3b74f4f"
           }
         },
         {
@@ -52,11 +52,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "677800212738-20c0aj8jq78nerbi4fk0a14uuvdtlrab.apps.googleusercontent.com",
+          "client_id": "677800212738-tagvel3vesjo9calqqaqcfsh1sgdbu4f.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.rudransh.smart_bin_sense_driver_app",
-            "certificate_hash": "f9653b4e59bfda4433d608ca932dfc7dc73a490a"
+            "certificate_hash": "e23920d9dc3ef7a38db2c12eac9e80a2c3b74f4f"
           }
         },
         {

@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:geocoding/geocoding.dart' as geocoding;
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart';
@@ -83,38 +82,6 @@ class FirebaseServices {
     final OAuthCredential facebookAuthCredential =
         FacebookAuthProvider.credential(loginResult.accessToken!.tokenString);
     return FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
-  }
-
-  Future<List<LatLng>> fetchBins() async {
-    List<LatLng> binsLocationList = [];
-    try {
-      QuerySnapshot querySnapshot = await bins.get();
-      for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
-        Map<String, dynamic> data =
-            documentSnapshot.data() as Map<String, dynamic>;
-        data.forEach((key, value) {
-          if (value is GeoPoint) {
-            double latitude = value.latitude;
-            double longitude = value.longitude;
-            binsLocationList.add(LatLng(latitude, longitude));
-          }
-        });
-      }
-    } catch (e) {
-      print("Error fetching data: $e");
-    }
-    return binsLocationList;
-  }
-
-  Future<void> addContactToDatabase(String name, String phoneNumber) async {
-    await helpline.doc().set({
-      "name": name.trim(),
-      "phoneNumber": phoneNumber.trim(),
-    });
-  }
-
-  Future<void> deleteContactFromDatabase(String docId) async {
-    await helpline.doc(docId).delete();
   }
 
   Future<String?> uploadImageToStorage(XFile? image) async {
@@ -222,8 +189,7 @@ class FirebaseServices {
 
     geocoding.Placemark firstPlaceMarks = placeMarks[0];
 
-    // Return the formatted address
-    return '${firstPlaceMarks.name},${firstPlaceMarks.subLocality},${firstPlaceMarks.postalCode}';
+    return '${firstPlaceMarks.name}, ${firstPlaceMarks.subLocality}, ${firstPlaceMarks.locality}, ${firstPlaceMarks.administrativeArea} - ${firstPlaceMarks.postalCode}';
   }
 
   Future<void> setTruckerHomeLocationToDatabase({

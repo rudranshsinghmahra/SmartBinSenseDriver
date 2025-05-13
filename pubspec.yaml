@@ -45,17 +45,18 @@ dependencies:
   firebase_database: ^10.3.6
   google_maps_flutter: ^2.5.0
   location: ^6.0.2
-  platform_device_id_v3: ^1.0.0
   google_sign_in: ^6.1.6
   flutter_facebook_auth: ^7.1.1
-  fluttertoast: ^8.2.4
+  fluttertoast: ^8.2.12
   flutter_compass: ^0.8.0
-  flutter_background_service: ^5.0.5
+  flutter_background_service: ^5.1.0
   permission_handler: ^11.1.0
   firebase_storage: ^11.5.6
   image_picker: ^1.0.5
   geolocator: ^13.0.1
   geocoding: ^3.0.0
+  flutter_udid: ^3.0.0
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
